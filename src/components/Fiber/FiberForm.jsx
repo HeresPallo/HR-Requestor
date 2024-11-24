@@ -22,6 +22,7 @@ const FiberForm = () => {
         mobile: z.number().gte(9, {message:"Mobile number should start with 0"}),
         fiber: z.number().gte(9, {message:"Fiber number should start with 0"}),
         sex: z.union([z.literal('Male'), z.literal('Female')]),
+        date_of_birth: z.string().min(3, {message:"date requires a minimum of 3 letters"}),
         email: z.string().email({ message: "Invalid email address" }),
         identification: z.union([z.literal('Drivers License'), z.literal('Passport'), z.literal('National ID')]),
         id_number: z.number().gte(9, {message:"ID number is required"}),
@@ -53,6 +54,7 @@ const FiberForm = () => {
     data.append('mobile', formData.mobile);
     data.append('fiber', formData.fiber);
     data.append('sex', formData.sex);
+    data.append('date_of_birth', formData.date_of_birth);
     data.append('identification', formData.identification);
     data.append('id_number', formData.id_number);
     data.append('name_address', formData.name_address);
@@ -139,6 +141,12 @@ const FiberForm = () => {
                         </div>
     
                     </div>   
+                          {/* Date Of Birth */}
+                          <div className="w-full">
+                            <label htmlFor="date_of_birth" className="dark:text-black mb-2">Date Of Birth</label>
+                            <input className="text-grey p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 bg-white"  type="date"
+                                   id="date_of_birth"  {...register("date_of_birth")}/>
+                        </div>
                     <div className="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full">
                     
                         {/* Email Address */}

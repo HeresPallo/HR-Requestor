@@ -27,6 +27,7 @@ const InsuranceForm = () => {
   sex: z.enum(["Male", "Female"], { message: "Sex must be either 'Male' or 'Female'" }),
   mobile: z.number().gte(9, {message:"Mobile number should start with 0"}),
   dependent: z.union([z.literal('Spouse'), z.literal('Dependent')]),
+  dependent_name: z.string().min(7, {message:"Type full name"}),
   d_date: z.string().min(1, { message: "Dependent date is required" }),
   declaration: z.literal(true,{
     errorMap: () => ({ message: "You must select and accept Declaration." }),
@@ -62,6 +63,7 @@ const InsuranceForm = () => {
     data.append('sex', formData.sex);
     data.append('mobile', formData.mobile);
     data.append('dependent', formData.dependent);
+    data.append('dependent_name', formData.dependent_name);
     data.append('d_date', formData.d_date);
     data.append('declaration', formData.declaration);
     if (image) {
@@ -230,6 +232,19 @@ for (let [key, value] of data.entries()) {
                                    id="d_date"  {...register("d_date")}/>
                         </div>
                         </div>   
+                         {/* Dependent Name */}
+                         <div className="w-full  mb-4 mt-6">
+                            <label htmlFor="dependent_name" className="mb-2 dark:text-black">Dependent Name:</label>
+                            <input type="text"
+                                    className="mt-2 p-4 w-full border-2 rounded-lg dark:text-black dark:border-black dark:bg-white"
+                                    placeholder="Full name here"
+                                        {...register("dependent_name")}
+                                    />
+                                    {errors.dependent_name &&<em className="text-red-500">
+                                    {errors.dependent_name.message}</em>}
+                                    {errors.dependent_name?.type === "minLength" &&<em className="text-red-500">
+                                        Type Dependents name</em>}
+                        </div>
                         {/* Dependent Image Upload */}
                         <div className="w-full  mb-4 mt-6 justify-center">
                         <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-black" htmlFor="image">Upload Dependent Image</label>

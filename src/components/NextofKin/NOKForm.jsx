@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 
 
+
 const NOKForm = () => {
   const form = useRef();
 
@@ -22,6 +23,7 @@ const NOKForm = () => {
 
     const schema = z.object({
         number: z.string().min(7, {message:"ID requires a minimum of 7 numbers"}),
+        employee_name: z.string().min(7, {message:"Type full name"}),
         name: z.string().min(3, {message:"Name requires a minimum of 3 letters"}),
         address: z.string().min(7,{message:"Address requires a minimum of 3 letters"}),
         contact: z.number().gte(9, {message:"Phone number should start with 0"}),
@@ -42,9 +44,11 @@ const NOKForm = () => {
 
   // Handle form submission
   const onSubmit = async (formData) => {
+    
     console.log('Form submitted:', formData); 
     // Append form data to FormData object
     const data = new FormData();
+    data.append('employee_name', formData.employee_name);
     data.append('employee_number', formData.number);
     data.append('nok_type', formData.nok_type);
     data.append('name', formData.name);
@@ -53,6 +57,7 @@ const NOKForm = () => {
     data.append('date_of_birth', formData.date);
     data.append('phone_number', formData.contact);
     if (picture) data.append('image', picture);
+    
 
     try {
       const response = await axios.post('http://localhost:5001/nextofkin', data, {
@@ -136,8 +141,22 @@ const NOKForm = () => {
                         <div>
                        
                         </div>
-                     {/* Employee number */}
+                     {/* Employee number & Name*/}
                     <div className="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full">
+                      {/* Employee Name*/}
+                    <div className="w-full  mb-4 mt-6">
+                            <label htmlFor="employee_name" className="mb-2 dark:text-black">Employee Name:</label>
+                            <input type="text"
+                                    className="mt-2 p-4 w-full border-2 rounded-lg dark:text-black dark:border-black dark:bg-white"
+                                    placeholder="Full name here"
+                                        {...register("employee_name")}
+                                    />
+                                    {errors.employee_name &&<em className="text-red-500">
+                                    {errors.employee_name.message}</em>}
+                                    {errors.employee_name?.type === "minLength" &&<em className="text-red-500">
+                                        Type full name</em>}
+                        </div>
+                          {/* Employee number */}
                         <div className="w-full  mb-4 mt-6">
                             <label htmlFor="number" className="mb-2 dark:text-black">Employee Number</label>
                             <input type="text"
@@ -150,8 +169,13 @@ const NOKForm = () => {
                                     {errors.number?.type === "minLength" &&<em className="text-red-500">
                                         ID requires a minimum of 7 numbers</em>}
                         </div>
-                        {/* Type*/}
-                        <div className="w-full  mb-4 mt-6">
+                      
+    
+                    </div>   
+                   {/*Type and NOK Name */}
+                    <div className="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full">
+                      {/* Type*/}
+                      <div className="w-full  mb-4 mt-6">
                         <label htmlFor="nok_type" className="dark:text-black mb-2">Select Type here</label>
                             <select
                             {...register("nok_type")}
@@ -164,14 +188,9 @@ const NOKForm = () => {
                                 </select>
                              
                         </div>
-    
-                    </div>   
-                   {/* Employee number */}
-                    <div className="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full">
-                    
                         {/* Full Name */}
                         <div className="w-full  mb-4 mt-6">
-                            <label htmlFor="name" className="mb-2 dark:text-black">Full Name</label>
+                            <label htmlFor="name" className="mb-2 dark:text-black">Next of Kins Full Name</label>
                             <input type="text"
                                     className="mt-2 p-4 w-full border-2 rounded-lg dark:text-black dark:border-black dark:bg-white"
                                     placeholder="Type Name Here"
@@ -182,8 +201,12 @@ const NOKForm = () => {
                                     {errors.name?.type === "minLength" &&<em className="text-red-500">
                                         Name should be 3 or more characters</em>}
                         </div>
-                        {/* Address */}
-                        <div className="w-full  mb-4 mt-6">
+                      
+                    </div>
+                   
+                    <div className="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full">
+                      {/* Address */}
+                      <div className="w-full">
                             <label htmlFor="address" className="mb-2 dark:text-black">Address</label>
                             <input type="text"
                                     className="mt-2 p-4 w-full border-2 rounded-lg dark:text-black dark:border-black dark:bg-white"
@@ -195,14 +218,12 @@ const NOKForm = () => {
                                     {errors.address?.type === "minLength" &&<em className="text-red-500">
                                         Address should be 7 or more characters</em>}
                         </div>
-                    </div>
-                    {/* Relationship */}
-                    <div className="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full">
+                         {/* Relationship */}
                         <div className="w-full">
                         <label htmlFor="relationship" className="dark:text-black mb-2">Relationship</label>
                             <select
                             {...register("relationship")}
-                                    className="w-full text-white border-2 rounded-lg p-4 pl-2 pr-2 dark:text-white dark:border-orange-500 dark:bg-orange-500"  >
+                                    className="mt-2 w-full text-white border-2 rounded-lg p-4 pl-2 pr-2 dark:text-white dark:border-orange-500 dark:bg-orange-500"  >
                                     <option disabled value="">Select Relationship</option>
                                     <option value="Spouse">Spouse</option>
                                     <option value="Child">Child</option>
@@ -212,16 +233,18 @@ const NOKForm = () => {
                                 </select>
                               
                         </div>
-                         {/* Date Of Birth */}
-                        <div className="w-full">
-                            <label htmlFor="date" className="dark:text-black mb-2">Date Of Birth</label>
-                            <input className="text-grey p-4 w-full border-2 rounded-lg dark:text-gray-200 dark:border-gray-600 bg-white"  type="date"
-                                   id="date"  {...register("date")}/>
-                        </div>
+                      
                         
                     </div>
-                       {/* Contact */}
+                       
                        <div className="flex lg:flex-row md:flex-col sm:flex-col xs:flex-col gap-2 justify-center w-full">
+                          {/* Date Of Birth */}
+                          <div className="w-full   mb-4 mt-6">
+                            <label htmlFor="date" className="dark:text-black mb-2">Date Of Birth</label>
+                            <input className=" mt-2 text-black p-4 w-full border-2 rounded-lg dark:text-black dark:border-gray-600 bg-white"  type="date"
+                                   id="date"  {...register("date")}/>
+                        </div>
+                        {/* Contact */}
                         <div className="w-full  mb-4 mt-6">
                             <label htmlFor="contact" className="mb-2 dark:text-black">Contact No.</label>
                             <input type="text"

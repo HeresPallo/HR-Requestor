@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import OverviewAdminCard from './Overview/OverviewCard';
-import RequestBar from './Overview/RequestBar';
+// import RequestBar from './Overview/RequestBar';
 
 const OverviewAdmin = () => {
   const [data, setData] = useState({
@@ -103,7 +103,7 @@ const OverviewAdmin = () => {
        date={data.insurance_date}
        
      />
-     <RequestBar/>
+     {/* <RequestBar/> */}
     </div>
   );
 };
