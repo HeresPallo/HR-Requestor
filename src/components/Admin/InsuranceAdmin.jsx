@@ -1,23 +1,25 @@
 import { useEffect, useState } from 'react';
 import jsPDF from "jspdf";
 import axios from 'axios';
+import { PDFDocument } from 'pdf-lib';
+import insuranceTemplate from '../../assets/insuranceTemplate';
 
 const InsuranceAdmin = () => {
   const [submissions, setSubmissions] = useState([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:5001/insurance');
-        const result = await response.json();
-        setSubmissions(result);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('http://localhost:5001/insurance');
+  //       const result = await response.json();
+  //       setSubmissions(result);
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
 
     // Fetch the submissions from the API
     useEffect(() => {
@@ -27,123 +29,87 @@ const InsuranceAdmin = () => {
     }, []);
 
   const handleExportToPDF = async (item) => {
-    console.log("Exporting PDF for:", item);
-    const doc = new jsPDF();
+    try {
+      // Load existing PDF template (converted to base64)
+      const base64Template = insuranceTemplate;
+      const existingPdfBytes = await fetch(base64Template).then((res) =>
+        res.arrayBuffer()
+      );
 
-       // Add a logo at the top
-  const logo = "/LOGO-Signature-Master-Right-White_RGB_EN.png"; // Replace with your logo's path
-  const logoImage = await fetch(logo)
-    .then((res) => res.blob())
-    .then((blob) => URL.createObjectURL(blob));
-  doc.addImage(logoImage, "PNG", 10, 10, 40, 20); // Adjust position and size
+      
+      // const { PDFDocument } = require("pdf-lib");
+      const pdfDoc = await PDFDocument.load(existingPdfBytes);
 
+      // Get the first page of the PDF
+      const pages = pdfDoc.getPages();
+      const firstPage = pages[0];
+      const { height } = firstPage.getSize();
+     
 
-    doc.setFontSize(16);
-    doc.text("Medical Insurance Submission", 105, 20, { align: "center" }); // Center title
-  
-    
-    // Add styled and underlined row data
-  doc.setFontSize(12);
-  const rowData = [
-    { label: "Employer Name", value: item.employer },
-    { label: "Name of Main Member", value: item.applicant },
-    { label: "Address", value: item.address },
-    { label: "Date of Birth", value: item.date_of_birth },
-    { label: "Sex", value: item.sex },
-    { label: "Mobile Number", value: item.mobile },
-    { label: "Dependent Selected", value: item.dependent },
-    { label: "Dependent Name", value: item.dependent_name },
-    { label: "Dependent Date of Birth", value: item.d_date },
-    { label: "Declaration", value: item.declaration ? "I Declare" : "No Declaration"  },
-  ];
-   
+      // Define text data to insert
+      const rows = [
+        { label: "Employer Name:", value: item.employer, x: 150, y: height - 150 },
+      { label: "Applicant Name:", value: item.applicant, x: 250, y: height - 190 },
+      { label: "Address:", value: item.address, x: 190, y: height - 230 },
+      { label: "Date of Birth:", value: item.date_of_birth, x: 150, y: height - 270 },
+      { label: "Sex:", value: item.sex, x: 310, y: height - 270 },
+      { label: "Mobile Number:", value: item.mobile, x: 450, y: height - 270 },
+      // { label: "Dependent Selected:", value: item.dependent, x: 50, y: height - 220 },
+      { label: "Dependent Name:", value: item.dependent_name, x: 220, y: height - 370 },
+      { label: "Dependent DOB:", value: item.d_date, x: 270, y: height - 405 },
+      // { label: "Declaration:", value: item.declaration ? "I Declare" : "No Declaration", x: 50, y: height - 280 },
+      ];
 
-  let yPosition = 60; // Starting Y position for row data
-const labelXPosition = 20; // X position for the label
-const valueXPosition = 80; // X position for the value (increased to create space)
+      // / Loop through rows and draw text at specified positions
+    rows.forEach((row) => {
+      firstPage.drawText(`${row.value}`, {
+        x: row.x,
+        y: row.y,
+        size: 12,
+      });
+    });
 
-rowData.forEach((row) => {
-  // Print the label in bold
-  doc.setFont("helvetica", "bold");
-  doc.text(`${row.label}:`, labelXPosition, yPosition);
+     // Add a second page
+     const secondPage = pdfDoc.addPage();
+    //  const { width: secondPageWidth, height: secondPageHeight } = secondPage.getSize();
 
-  // Print the value normally
-  doc.setFont("helvetica", "normal");
-  doc.text(`${row.value}`, valueXPosition, yPosition);
+      // Embed an image if available
+      if (item.image) {
+        const imageBytes = await fetch(`http://localhost:5001/${item.image}`).then((res) =>
+          res.arrayBuffer()
+        );
+        const image = await pdfDoc.embedJpg(imageBytes);
+        secondPage.drawImage(image, { x: 100, y: 400, width: 300, height: 300 });
+      }
 
-  // Draw underline for the value
-  const textWidth = doc.getTextWidth(row.value); // Measure the text width
-  doc.line(valueXPosition, yPosition + 1, valueXPosition + textWidth, yPosition + 1); // Underline
+      // Save the modified PDF
+      const pdfBytes = await pdfDoc.save();
+      const blob = new Blob([pdfBytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
 
-  yPosition += 8; // Increase space between rows (this is where you control the gap)
-});
-
- // Set an initial Y position for the content
- let currentY = 150; // Start position for content
-
-// Define constants for the signature box dimensions
-const boxWidth = 60; // Width of each box
-const boxHeight = 20; // Height of each box
-const gap = 15; // Space between boxes
-
-// Adjust dynamic positioning for the signature boxes
-const boxYTop = currentY + 80; // Add space after the last row
-
-// Box positions
-const firstBoxX = 20; // X position for the first box
-const secondBoxX = firstBoxX + boxWidth + gap; // X position for the second box
-
-
-// Draw top row boxes
-doc.rect(firstBoxX, boxYTop, boxWidth, boxHeight); // First box
-doc.rect(secondBoxX, boxYTop, boxWidth, boxHeight); // Second box
-
-
-// Add titles below the boxes
-doc.setFontSize(10);
-doc.text("Signature of Main Member", firstBoxX + 5, boxYTop + boxHeight + 10);
-doc.text("Date", secondBoxX + 5, boxYTop + boxHeight + 10);
-
-  
-   // Add Image
-  if (item.image) {
-    const imageUrl = `http://localhost:5001/${item.image}`; // Prepend the base URL
-    const image = new Image();
-    image.src = imageUrl;
-
-    image.onload = () => {
-      const fileExtension = imageUrl.split('.').pop().toLowerCase();
-      const imageType = fileExtension === 'png' ? 'PNG' : 'JPEG';
-
-      doc.addImage(image, imageType, 20, yPosition, 50, 50); // Add image below details
-      yPosition += 60; // Space for the image
-      doc.save(`${item.applicant}insurance_submission.pdf`); // Save the PDF
-    };
-
-    image.onerror = () => {
-      console.error("Error loading image:", imageUrl);
-      doc.text("Image not available.", 20, yPosition);
-      doc.save(`${item.applicant}insurance_submission.pdf`);
-    };
-  } else {
-    doc.text("Image not available.", 20, yPosition);
-    doc.save(`${item.applicant}insurance_submission.pdf`);
-  }
+      // Trigger the download
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${item.applicant}_insurance_submission.pdf`;
+      link.click();
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+    }
   };
 
-    // Handle the "Complete" button click
-    const handleComplete = async (id) => {
-      try {
-        // Send the PATCH request to mark the submission as complete
-        await axios.patch(`http://localhost:5001/insurance/${id}/complete`);
-  
-        // Remove the completed submission from the state (to remove it from the table)
-        setSubmissions(submissions.filter(submission => submission.id !== id));
-      } catch (error) {
-        console.error('Error completing submission:', error);
-      }
-    };
-  
+  // Handle the "Complete" button click
+  const handleComplete = async (id) => {
+    try {
+      // Send the PATCH request to mark the submission as complete
+      await axios.patch(`http://localhost:5001/insurance/${id}/complete`);
+
+      // Remove the completed submission from the state (to remove it from the table)
+      setSubmissions(submissions.filter(submission => submission.id !== id));
+      
+    } catch (error) {
+      console.error('Error completing submission:', error);
+    }
+  };
 
   return (
     <div className="p-6">
@@ -161,12 +127,12 @@ doc.text("Date", secondBoxX + 5, boxYTop + boxHeight + 10);
               <th className="border text-white px-4 py-2">Dependent Selected</th>
               <th className="border text-white px-4 py-2">Dependent Name</th>
               <th className="border text-white px-4 py-2">Dependent Date Of Birth</th>
-              <th className="border text-white px-4 py-2">Dependent Image</th>
               <th className="border text-white px-4 py-2">Declaration</th>
+              
             </tr>
           </thead>
           <tbody>
-          {submissions.map(submission => (
+            {submissions.map((submission) => (
               <tr key={submission.id} className="text-center">
                 <td className="border border-black px-4 py-2">{submission.employer}</td>
                 <td className="border border-black px-4 py-2">{submission.applicant}</td>
@@ -177,28 +143,23 @@ doc.text("Date", secondBoxX + 5, boxYTop + boxHeight + 10);
                 <td className="border border-black px-4 py-2">{submission.dependent}</td>
                 <td className="border border-black px-4 py-2">{submission.dependent_name}</td>
                 <td className="border border-black px-4 py-2">{submission.d_date}</td>
-                <td className="border border-black px-4 py-2">{submission.declaration ? "I Declare" : "No Declaration"}</td>
                 <td className="border border-black px-4 py-2">
-                  <img
-                    src={submission.image}
-                    alt={`${submission.name}'s Insurance`}
-                    className="h-16 w-16 object-cover mx-auto"
-                  />
+                  {submission.declaration ? "I Declare" : "No Declaration"}
                 </td>
                 <td className="border px-4 py-2">
-      <button
-        className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-1 px-2 rounded mb-4"
-        onClick={() => handleExportToPDF(submission)}
-      >
-        Export
-      </button>
-      <button
+                  <button
+                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-1 px-2 rounded mb-4"
+                    onClick={() => handleExportToPDF(submission)}
+                  >
+                    Export
+                  </button>
+                  <button
           className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded mb-4"
           onClick={() => handleComplete(submission.id)}
         >
           Complete
         </button>
-    </td>
+                </td>
               </tr>
             ))}
           </tbody>
