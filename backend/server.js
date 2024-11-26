@@ -320,12 +320,14 @@ app.get("/totalrequests", async(req, res) =>{
     (SELECT COUNT(*) FROM insurance) AS insurance_count,
     (SELECT COUNT(*) FROM fibersubmissions) AS fiber_count,
     (SELECT COUNT(*) FROM idcard) AS id_cards_count,
+      (SELECT COUNT(*) FROM perdiem) AS perdiem_count,
     (
         (SELECT COUNT(*) FROM nextofkinsubmissions) +
         (SELECT COUNT(*) FROM phoneclaim) +
         (SELECT COUNT(*) FROM insurance) +
         (SELECT COUNT(*) FROM fibersubmissions) +
-        (SELECT COUNT(*) FROM idcard) 
+        (SELECT COUNT(*) FROM idcard) +
+         (SELECT COUNT(*) FROM perdiem) 
     ) AS total_requests;
         `;
         const result = await db.query(query);
@@ -348,6 +350,8 @@ SELECT 'insurance', MAX(created_at) FROM insurance
 UNION ALL
 SELECT 'fibersubmissions', MAX(created_at) FROM fibersubmissions
 UNION ALL
+SELECT 'perdiem', MAX(created_at) FROM perdiem
+UNION ALL
 SELECT 'idcard', MAX(created_at) FROM idcard;
 
         `;
@@ -367,6 +371,59 @@ app.get("/requests", async(req, res) =>{
         console.log(err.message);
     }
 })
+
+//Get All Perdiems//
+app.get("/perdiem", async(req, res) =>{
+  try {
+      const allPerDiem = await db.query("SELECT * FROM perdiem WHERE status = $1 ORDER BY created_at DESC", ['pending']);
+      res.json(allPerDiem.rows);
+  } catch (err) {
+      console.log(err.message);
+  }
+})
+
+
+//Submit Per Diem//
+app.post("/perdiem", async(req,res) => {
+  try {
+      const { employee_name, department, depart_date, return_date, purpose,level,filing_date,travel_names, purpose_two,mode,route_from, est_depart,route_via,destination,est_arrival,mobile,return_names,est_depart2, est_arrival2,sign_date,total_days, amount_total  } = req.body;
+      const newPerDiem = await db.query("INSERT INTO perdiem (employee_name, department, depart_date, return_date, purpose,level,filing_date,travel_names, purpose_two,mode,route_from, est_depart,route_via,destination,est_arrival,mobile,return_names,est_depart2, est_arrival2,sign_date,total_days, amount_total) VALUES ($1, $2, $3, $4, $5, $6, $7,$8, $9, $10, $11, $12, $13,$14,$15, $16, $17, $18, $19, $20, $21, $22) RETURNING *",
+          [employee_name, department, depart_date, return_date, purpose,level,filing_date,travel_names, purpose_two,mode,route_from, est_depart,route_via,destination,est_arrival,mobile,return_names,est_depart2, est_arrival2,sign_date,total_days, amount_total]);
+          res.status(201).json({message:'Per Diem submission successful',data: newPerDiem.rows[0] });
+             // Add entry to requests table
+  await db.query(
+      `INSERT INTO requests (form_name)
+       VALUES ($1)`,
+      ['Per Diem']
+    );
+  } catch (err) {
+      console.log(err.message);
+  }
+  })
+
+
+    //Update idcard//
+app.patch("/perdiem/:id/complete", async(req, res) =>{
+  const { id } = req.params; // Get the Perdiem from the URL
+const status = 'Completed'; // Set the new status
+
+try {
+  // Update the status of the submission in the database
+  const updatedSubmission = await db.query(
+    'UPDATE perdiem SET status = $1 WHERE id = $2 RETURNING *',
+    [status, id]
+  );
+
+  if (updatedSubmission.rows.length === 0) {
+    return res.status(404).json({ error: 'Submission not found' });
+  }
+
+  res.status(200).json(updatedSubmission.rows[0]); // Return the updated submission
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Something went wrong while updating the submission.' });
+}
+});
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

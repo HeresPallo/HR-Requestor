@@ -6,6 +6,7 @@ import OverviewAdminCard from './Overview/OverviewCard';
 const OverviewAdmin = () => {
   const [data, setData] = useState({
     next_of_kin_count: 0,
+    perdiem_count:0,
     phone_claim_count: 0,
     insurance_count: 0,
     fiber_count: 0,
@@ -58,6 +59,10 @@ const OverviewAdmin = () => {
               requestData.find((req) => req.requestdates === "idcard")?.last_request_date
                 ? new Date(requestData.find((req) => req.requestdates === "idcard")?.last_request_date).toLocaleDateString()
                 : "No Date",
+                perdiem_date:
+              requestData.find((req) => req.requestdates === "perdiem")?.last_request_date
+                ? new Date(requestData.find((req) => req.requestdates === "perdiem")?.last_request_date).toLocaleDateString()
+                : "No Date",
           }));
         } catch (error) {
           console.error("Error fetching request dates:", error);
@@ -101,6 +106,12 @@ const OverviewAdmin = () => {
        title={"ID Card Requests"}
        count={data.id_cards_count} 
        date={data.insurance_date}
+       
+     />
+       <OverviewAdminCard
+       title={"Per Diem Requests"}
+       count={data.perdiem_count} 
+       date={data.perdiem_date}
        
      />
      {/* <RequestBar/> */}

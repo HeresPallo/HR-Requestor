@@ -58,6 +58,15 @@ CREATE TABLE insurance(
   image_four VARCHAR(255)
 );
 
+ALTER TABLE perdiem ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE perdiem
+RENAME COLUMN totalAmount to amountTotal;
+
+-- different alter
+ALTER TABLE perdiem
+ALTER COLUMN totalDays INT;
+
 
 CREATE TABLE idcard(
  id SERIAL PRIMARY KEY,
@@ -71,3 +80,73 @@ CREATE TABLE idcard(
 
 INSERT INTO phoneclaim (employee_name, department, payment, date, band)
 VALUES ('Alimamy Bangura', 'Human Resource', 'Bi-Annual Phone Claim', '16-11-2024','Band 5 (€300) (Managers / Asst. Managers)');
+
+CREATE TABLE perdiem(
+ id SERIAL PRIMARY KEY,
+ employee_name VARCHAR(255) NOT NULL,
+ department VARCHAR(255) NOT NULL,
+  depart_date VARCHAR(255) NOT NULL,
+  return_date VARCHAR(255) NOT NULL,
+  purpose VARCHAR(255) NOT NULL,
+  level VARCHAR(255) NOT NULL,
+  filing_date VARCHAR(200) NOT NULL,
+  travel_names VARCHAR(200),
+  purpose_two VARCHAR(200),
+  mode VARCHAR(200),
+  route_from VARCHAR(255) NOT NULL,
+  est_depart VARCHAR(255) NOT NULL,
+  route_via VARCHAR(255) NOT NULL,
+  destination VARCHAR(255) NOT NULL,
+  est_arrival VARCHAR(255) NOT NULL,
+  mobile VARCHAR(255) NOT NULL,
+  return_names VARCHAR(255) NOT NULL,
+  est_depart2 VARCHAR(255) NOT NULL,
+  est_arrival2 VARCHAR(255) NOT NULL,
+  sign_date VARCHAR(255) NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending'
+);
+
+CREATE VIEW total_requests_view AS
+SELECT 
+    id,
+    'Per Diem' AS perdiem,
+    created_at,
+    status -- Add the new column here
+FROM perdiem
+UNION ALL
+    SELECT 
+        id,
+        'Next of Kin' AS nextofkin,
+        created_at,
+        status -- Assume 'status' is in your `nextofkinsubmissions` table
+    FROM nextofkinsubmissions
+    UNION ALL
+    SELECT 
+        id,
+        'Phone Claim' AS phoneclaim,
+        created_at,
+        status -- Assume 'status' is in your `phoneclaimsubmissions` table
+    FROM phoneclaim
+    UNION ALL
+    SELECT 
+        id,
+        'Insurance' AS insurance,
+        created_at,
+        status -- Assume 'status' is in your `insurancesubmissions` table
+    FROM insurance
+    UNION ALL
+    SELECT 
+        id,
+        'ID Card' AS form_name,
+        created_at,
+        status -- Assume 'status' is in your `idcardsubmissions` table
+    FROM idcard
+	UNION ALL
+	SELECT 
+    id,
+    'Fiber' AS fiber,
+    created_at,
+    status -- Add the new column here
+FROM fibersubmissions
+combined_requests
+ORDER BY created_at DESC;

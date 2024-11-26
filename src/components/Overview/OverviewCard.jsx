@@ -13,11 +13,13 @@ const OverviewCard = () => {
       Your Digital gateway to all requests for the HR Department:
     </p>
     <ul className="flex-row text-orange-500 text-xl">
+    <Link to="/perdiem"><li>Per Diem</li></Link>
     <Link to="/nextofkin"><li>Next of Kin</li></Link>
     <Link to="/phoneclaim"><li>Phone Claim</li></Link>
     <Link to="/insurance"><li>Medical Insurance</li></Link>
     <Link to="/fiber"><li>Fiber Offer</li></Link>
     <Link to="/idcard"><li>ID Cards</li></Link>
+    
     </ul>
     
   </div>

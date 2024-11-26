@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { HiOutlineSquares2X2,HiOutlineUsers,HiOutlineDevicePhoneMobile } from "react-icons/hi2";
 import { CiMedicalClipboard,CiCreditCard1 } from "react-icons/ci";
 import { RiHomeWifiLine } from "react-icons/ri";
+import { MdEmojiTransportation } from "react-icons/md";
 
 
 
@@ -20,6 +21,12 @@ const Sidebar = () => {
             <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
             <HiOutlineSquares2X2 />
                <NavLink className="text-white ms-3" to='/admin/overview'>Overview</NavLink>
+            </div>
+         </li>
+         <li>
+            <div className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+            <MdEmojiTransportation />
+               <NavLink className="text-white ms-3" to='/admin/perdiem'>Per Diem</NavLink>
             </div>
          </li>
          <li>

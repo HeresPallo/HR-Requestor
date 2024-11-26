@@ -14,6 +14,8 @@ import FiberAdmin from "./Admin/FiberAdmin";
 import PhoneClaimAdmin from "./Admin/PhoneClaimAdmin";
 import InsuranceAdmin from "./Admin/InsuranceAdmin";
 import IDCardAdmin from "./Admin/IDCardAdmin";
+import PerDiemSection from "./Per Diem/PerDiemSection";
+import PerDiemAdmin from "./Admin/Overview/PerDiemAdmin";
 
 
 
@@ -24,6 +26,7 @@ const AllRouting = () => {
 <Routes>
             {/* User Routes */}
             <Route className="bg-orange-500" path="/" element={<Home/>}/>
+            <Route path="/perdiem" element={<PerDiemSection/>}/>
             <Route path="/nextofkin" element={<NextofKin/>}/>
             <Route path="/phoneclaim" element={<Phone/>}/>
             <Route path="/insurance" element={<Insurance/>}/>
@@ -33,6 +36,7 @@ const AllRouting = () => {
         {/* Admin Routes */}
         <Route path="/admin" element={<DashboardLayout />}>
         <Route path="/admin/overview" element={<OverviewAdmin/>}/>
+        <Route path="/admin/perdiem" element={<PerDiemAdmin/>}/>
         <Route path="/admin/nextofkin" element={<NextofKinAdmin/>}/>
         <Route path="/admin/fiber" element={<FiberAdmin/>}/>
         <Route path="/admin/phoneclaim" element={<PhoneClaimAdmin/>}/>
