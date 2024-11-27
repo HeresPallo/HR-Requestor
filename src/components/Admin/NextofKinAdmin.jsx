@@ -3,7 +3,7 @@ import jsPDF from "jspdf";
 import axios from 'axios';
 
 const NextofKinAdmin = () => {
-  // const [data, setData] = useState([]);
+  
   const [submissions, setSubmissions] = useState([]);
 
   useEffect(() => {
