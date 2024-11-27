@@ -16,6 +16,7 @@ import InsuranceAdmin from "./Admin/InsuranceAdmin";
 import IDCardAdmin from "./Admin/IDCardAdmin";
 import PerDiemSection from "./Per Diem/PerDiemSection";
 import PerDiemAdmin from "./Admin/Overview/PerDiemAdmin";
+import AbsenceAdmin from "./Admin/AbsenceAdmin";
 
 
 
@@ -42,6 +43,7 @@ const AllRouting = () => {
         <Route path="/admin/phoneclaim" element={<PhoneClaimAdmin/>}/>
         <Route path="/admin/insurance" element={<InsuranceAdmin/>}/>
         <Route path="/admin/idcard" element={<IDCardAdmin/>}/>
+        <Route path="/admin/absence" element={<AbsenceAdmin/>}/>
             </Route>
             <Route path="*" element={<NotFound/>}/>
             </Routes>

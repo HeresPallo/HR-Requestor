@@ -29,7 +29,7 @@ const Navbar = () => {
                     <NavLink className="text-white"  to='/fiber'>Fiber</NavLink>
                 </li>
                 <li>
-                    <NavLink className="text-white"  to='/idcard'>ID Cards</NavLink>
+                    <NavLink className="text-white"  to='/idcard'>Access Management</NavLink>
                 </li>
             </ul>
             </div>

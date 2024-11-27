@@ -127,7 +127,7 @@ const PerDiemAdmin = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Perdiem Submissions</h1>
       <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-200">
+        <table className="table-auto bg-white w-full border-collapse border border-gray-200">
           <thead>
             <tr className="bg-black">
               <th className="border text-white px-4 py-2">Employee Name</th>
@@ -152,6 +152,7 @@ const PerDiemAdmin = () => {
               <th className="border text-white px-4 py-2">Date of Application</th>
               <th className="border text-white px-4 py-2">Total Days</th>
               <th className="border text-white px-4 py-2">Total Amount</th>
+              <th className="border text-white px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>

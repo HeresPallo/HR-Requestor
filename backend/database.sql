@@ -67,6 +67,10 @@ RENAME COLUMN totalAmount to amountTotal;
 ALTER TABLE perdiem
 ALTER COLUMN totalDays INT;
 
+status VARCHAR(50) DEFAULT 'pending',
+
+ALTER TABLE absence
+DROP COLUMN status;
 
 CREATE TABLE idcard(
  id SERIAL PRIMARY KEY,
@@ -123,6 +127,13 @@ UNION ALL
     UNION ALL
     SELECT 
         id,
+        'Absence' AS absence,
+        created_at,
+        status -- Assume 'status' is in your `nextofkinsubmissions` table
+    FROM absence
+    UNION ALL
+    SELECT 
+        id,
         'Phone Claim' AS phoneclaim,
         created_at,
         status -- Assume 'status' is in your `phoneclaimsubmissions` table
@@ -150,3 +161,14 @@ UNION ALL
 FROM fibersubmissions
 combined_requests
 ORDER BY created_at DESC;
+
+
+CREATE TABLE absence(
+ id SERIAL PRIMARY KEY,
+ employee_name VARCHAR(255) NOT NULL,
+  employee_number VARCHAR(255) NOT NULL,
+  department VARCHAR(255) NOT NULL,
+  start_date VARCHAR(255) NOT NULL,
+  end_date VARCHAR(255) NOT NULL,
+  absence VARCHAR(255) NOT NULL
+);

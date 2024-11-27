@@ -145,7 +145,7 @@ const NextofKinAdmin = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Next of Kin Submissions</h1>
       <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-200">
+        <table className="table-auto bg-white w-full border-collapse border border-gray-200">
           <thead>
             <tr className="bg-black">
               <th className="border text-white px-4 py-2">Employee Number</th>
@@ -156,6 +156,7 @@ const NextofKinAdmin = () => {
               <th className="border text-white px-4 py-2">Date of Birth</th>
               <th className="border text-white px-4 py-2">Phone</th>
               <th className="border text-white px-4 py-2">Image</th>
+              <th className="border text-white px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>

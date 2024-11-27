@@ -321,13 +321,15 @@ app.get("/totalrequests", async(req, res) =>{
     (SELECT COUNT(*) FROM fibersubmissions) AS fiber_count,
     (SELECT COUNT(*) FROM idcard) AS id_cards_count,
       (SELECT COUNT(*) FROM perdiem) AS perdiem_count,
+      (SELECT COUNT(*) FROM absence) AS absence_count,
     (
         (SELECT COUNT(*) FROM nextofkinsubmissions) +
         (SELECT COUNT(*) FROM phoneclaim) +
         (SELECT COUNT(*) FROM insurance) +
         (SELECT COUNT(*) FROM fibersubmissions) +
         (SELECT COUNT(*) FROM idcard) +
-         (SELECT COUNT(*) FROM perdiem) 
+         (SELECT COUNT(*) FROM perdiem) +
+         (SELECT COUNT(*) FROM absence) 
     ) AS total_requests;
         `;
         const result = await db.query(query);
@@ -351,6 +353,8 @@ UNION ALL
 SELECT 'fibersubmissions', MAX(created_at) FROM fibersubmissions
 UNION ALL
 SELECT 'perdiem', MAX(created_at) FROM perdiem
+UNION ALL
+SELECT 'absence', MAX(created_at) FROM absence
 UNION ALL
 SELECT 'idcard', MAX(created_at) FROM idcard;
 
@@ -411,6 +415,57 @@ try {
   // Update the status of the submission in the database
   const updatedSubmission = await db.query(
     'UPDATE perdiem SET status = $1 WHERE id = $2 RETURNING *',
+    [status, id]
+  );
+
+  if (updatedSubmission.rows.length === 0) {
+    return res.status(404).json({ error: 'Submission not found' });
+  }
+
+  res.status(200).json(updatedSubmission.rows[0]); // Return the updated submission
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ error: 'Something went wrong while updating the submission.' });
+}
+});
+
+//Get All Absence Submissions//
+app.get("/absence", async(req, res) =>{
+  try {
+      const allAbsence = await db.query("SELECT * FROM absence WHERE status = $1 ORDER BY created_at DESC", ['pending']);
+      res.json(allAbsence.rows);
+  } catch (err) {
+      console.log(err.message);
+  }
+})
+
+//Submit Absence Claim//
+app.post("/absence", async(req,res) => {
+  try {
+      const { employee_name, employee_number, department, start_date, end_date,absence } = req.body;
+      const newAbsence = await db.query("INSERT INTO absence (employee_name, employee_number, department, start_date, end_date,absence ) VALUES ($1, $2, $3, $4, $5,$6) RETURNING *",
+          [employee_name, employee_number, department, start_date, end_date,absence ]);
+          res.status(201).json({message:'Absence submission successful',data: newAbsence.rows[0] });
+             // Add entry to requests table
+  await db.query(
+      `INSERT INTO requests (form_name)
+       VALUES ($1)`,
+      ['Absence']
+    );
+  } catch (err) {
+      console.log(err.message);
+  }
+  })
+
+      //Update absence//
+app.patch("/absence/:id/complete", async(req, res) =>{
+  const { id } = req.params; // Get the Absence from the URL
+const status = 'Completed'; // Set the new status
+
+try {
+  // Update the status of the submission in the database
+  const updatedSubmission = await db.query(
+    'UPDATE absence SET status = $1 WHERE id = $2 RETURNING *',
     [status, id]
   );
 

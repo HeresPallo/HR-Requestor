@@ -18,7 +18,7 @@ const OverviewCard = () => {
     <Link to="/phoneclaim"><li>Phone Claim</li></Link>
     <Link to="/insurance"><li>Medical Insurance</li></Link>
     <Link to="/fiber"><li>Fiber Offer</li></Link>
-    <Link to="/idcard"><li>ID Cards</li></Link>
+    <Link to="/idcard"><li>Access Management</li></Link>
     
     </ul>
     

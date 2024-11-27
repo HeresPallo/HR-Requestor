@@ -16,6 +16,7 @@ const App = () => {
     "/admin/medicalinsurance",
     "/admin/fiber",
     "/admin/idcards",
+    "/admin/absence",
   ];
 
   // Check if the current route is an admin route

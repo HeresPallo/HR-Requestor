@@ -133,7 +133,7 @@ doc.text("HR Director Approval", fourthBoxX + 5, boxYBottom + boxHeight + 10);
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Phone Claim Submissions</h1>
       <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-200">
+        <table className="table-auto bg-white w-full border-collapse border border-gray-200">
           <thead>
             <tr className="bg-black">
               <th className="border text-white px-4 py-2">Employee Name</th>
@@ -141,6 +141,7 @@ doc.text("HR Director Approval", fourthBoxX + 5, boxYBottom + boxHeight + 10);
               <th className="border text-white px-4 py-2">Purpose of Payment</th>
               <th className="border text-white px-4 py-2">Application Date</th>
               <th className="border text-white px-4 py-2">Handset Benefit by Band</th>
+              <th className="border text-white px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -153,13 +154,13 @@ doc.text("HR Director Approval", fourthBoxX + 5, boxYBottom + boxHeight + 10);
                 <td className="border border-black px-4 py-2">{submission.band}</td>
                 <td className="border px-4 py-2">
       <button
-        className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-1 px-2 rounded mb-4"
+        className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-1 px-2 rounded mb-8"
         onClick={() => handleExportToPDF(submission)}
       >
         Export
       </button>
       <button
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded mb-4"
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded m-4"
           onClick={() => handleComplete(submission.id)}
         >
           Complete

@@ -14,7 +14,7 @@ const OverviewAdmin = () => {
     total_requests: 0,
   });
 
-  const [requestDates, setRequestDates] = useState([]);
+  // const [requestDates, setRequestDates] = useState([]);
 
   useEffect(() => {
     // Fetch total requests data from the API
@@ -63,6 +63,10 @@ const OverviewAdmin = () => {
               requestData.find((req) => req.requestdates === "perdiem")?.last_request_date
                 ? new Date(requestData.find((req) => req.requestdates === "perdiem")?.last_request_date).toLocaleDateString()
                 : "No Date",
+                absence_date:
+                requestData.find((req) => req.requestdates === "absence")?.last_request_date
+                  ? new Date(requestData.find((req) => req.requestdates === "absence")?.last_request_date).toLocaleDateString()
+                  : "No Date",
           }));
         } catch (error) {
           console.error("Error fetching request dates:", error);
@@ -112,6 +116,12 @@ const OverviewAdmin = () => {
        title={"Per Diem Requests"}
        count={data.perdiem_count} 
        date={data.perdiem_date}
+       
+     />
+     <OverviewAdminCard
+       title={"Absence Requests"}
+       count={data.absence_count} 
+       date={data.absence_date}
        
      />
      {/* <RequestBar/> */}

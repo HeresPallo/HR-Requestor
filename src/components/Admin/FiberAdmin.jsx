@@ -132,7 +132,7 @@ doc.rect(thirdBoxX, boxYBottom, boxWidth, boxHeight); // Third box
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Fiber Submissions</h1>
       <div className="overflow-x-auto">
-        <table className="table-auto w-full border-collapse border border-gray-200">
+        <table className="table-auto bg-white w-full border-collapse border border-gray-200">
           <thead>
             <tr className="bg-black">
               <th className="border text-white px-4 py-2">Employee Name</th>
@@ -150,6 +150,7 @@ doc.rect(thirdBoxX, boxYBottom, boxWidth, boxHeight); // Third box
               <th className="border text-white px-4 py-2">Total Cost (inclusive of 15% GST)</th>
               <th className="border text-white px-4 py-2">Monthly Deduction: [as per scheme]</th>
               <th className="border text-white px-4 py-2">Declaration</th>
+              <th className="border text-white px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
